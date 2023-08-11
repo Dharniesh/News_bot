@@ -3,7 +3,7 @@ from gnews import GNews
 import pandas as pd
 
 
-st.markdown("<div style='text-align: center;'><h1>Google News Search App</h1></div>", unsafe_allow_html=True)
+st.markdown("<div style='text-align: center;'><h1>UK Finance News Aggregator</h1></div>", unsafe_allow_html=True)
 
 # Style for the colored and centered note
 note_style = "<div style='text-align: center; color: #3366ff; font-size: 18px;'>Note: You can either enter the period or start and end dates.</div>"
