@@ -6,7 +6,8 @@ import pandas as pd
 st.markdown("<div style='text-align: center;'><h1>UK Finance News Aggregator</h1></div>", unsafe_allow_html=True)
 
 # Style for the colored and centered note
-note_style = "<div style='text-align: center; color: #3366ff; font-size: 18px;'>Note: You can either enter the period or start and end dates.</div>"
+note_style = "<div style='text-align: center; color: #3366ff; font-size: 18px;'>Note: 1. You can either enter the period or start and end dates.</div>"
+note_style = "<div style='text-align: center; color: #3366ff; font-size: 18px;'>      2. A greater volume of requests could lead to a temporary IP block. </div>"
 
 # Display the note
 st.markdown(note_style, unsafe_allow_html=True)
