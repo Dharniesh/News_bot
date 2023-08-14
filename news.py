@@ -1,14 +1,41 @@
 import streamlit as st
 from gnews import GNews
 import pandas as pd
+import openai
+import time
+import openai
+import requests
+from bs4 import BeautifulSoup
 
+openai.api_key=st.secrets['openai_api']
 
-st.markdown("<div style='text-align: center;'><h1>UK Finance News Aggregator</h1></div>", unsafe_allow_html=True)
+def ask_GPT(news):
+    prompt = f"""
+    Your objective is to summarize the news webpage while retaining \
+    the most crucial information in bullet points.
+    
+    Summarize the News below, delimited by triple
+    backticks.
+    
+    News: ```{news}```
+    """
+    completion = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo-16k",
+        temperature=0,
+        max_tokens=4096,
+        messages=[
+            {"role": "user", "content": prompt }
+        ]
+    )
+    #total_tokens = completion["usage"]["total_tokens"]
+    #print("Total Tokens:", total_tokens)
+    return completion.choices[0].message.content
 
-# Style for the colored and centered notes
-note_style = "<div style='text-align: center; color: #3366ff; font-size: 18px;'>Note: </div>"
-note_style += "<div style='text-align: center; color: #3366ff; font-size: 18px;'>1. You can either enter the period or start and end dates.</div>"
-note_style += "<div style='text-align: center; color: #3366ff; font-size: 18px;'>2. A greater volume of requests could lead to a temporary IP block.</div>"
+openai.api_key=openai_apikey
+st.markdown("<div style='text-align: center;'><h1>News Search App</h1></div>", unsafe_allow_html=True)
+
+# Style for the colored and centered note
+note_style = "<div style='text-align: center; color: #3366ff; font-size: 18px;'>Note: You can either enter the period or start and end dates.</div>"
 
 # Display the note
 st.markdown(note_style, unsafe_allow_html=True)
@@ -87,8 +114,11 @@ if search_button_clicked:
 
     # Create the GNews object with the prepared parameters
     google_news = GNews(**parameters)
-    results = google_news.get_news("UK Finance")
-
+    news_list=["Uk Lending", "Uk loan interest rates", "uk unsecured loans, Uk economy"]
+    results=[]
+    for j in news_list:
+        results_k = google_news.get_news(j)
+        results.extend(results_k)
     # Create new lists to hold extracted data
     publisher_titles = []
     publisher_hrefs = []
@@ -111,3 +141,45 @@ if search_button_clicked:
     if search_button_clicked and df is not None:
         st.write("Search Results:")
         st.dataframe(df)
+
+    cgpt_text=[]
+    txt_summ=[]
+    for i, URL in enumerate(df['url']):  # Added enumeration to get the index 'i'
+        try:
+            r = requests.get(URL)
+            r.raise_for_status()  # Check for request success
+            soup = BeautifulSoup(r.text, 'html.parser')
+            results = soup.find_all(['h1', 'p'])
+            text = [result.get_text() for result in results]  # Use get_text() instead of result.text
+            news_article = ' '.join(text)
+            cgpt_text.append(news_article)
+            summary_txt = ask_GPT(news_article)
+            txt_summ.append(summary_txt)
+            print(news_article)
+            print('------------------------------------------------------------')
+            # Add the title to the DataFrame
+            df.loc[i, 'summary_title'] = df.loc[i, 'title']
+            time.sleep(5)
+            temp_var = 1
+        except Exception as e:
+            print(f"Error processing URL: {URL}\nError message: {e}")
+            temp_var = 0
+
+    # Store the summaries and titles in a .txt file
+    with open('summaries.txt', 'w', encoding='utf-8') as file:
+        for i, summary in enumerate(txt_summ):
+            title = df['title'][i]  # Get the title from the DataFrame
+            file.write(f"{title}\n\n")  # Add the title with a space after
+            file.write(f"URL: {df['url'][i]}\n\n")  # Add the URL on the next line
+            file.write(f"{summary}\n\n")  # Add the summary with a space after
+
+    with open('summaries.txt', 'r', encoding='utf-8') as file:
+        file_contents = file.read()
+
+    # Add a download button
+    st.download_button(
+        label="Download Summaries",
+        data=file_contents,
+        file_name='summaries.txt',
+        mime='text/plain',
+    )
