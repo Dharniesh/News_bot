@@ -31,7 +31,6 @@ def ask_GPT(news):
     #print("Total Tokens:", total_tokens)
     return completion.choices[0].message.content
 
-openai.api_key=openai_apikey
 st.markdown("<div style='text-align: center;'><h1>News Search App</h1></div>", unsafe_allow_html=True)
 
 # Style for the colored and centered note
