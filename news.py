@@ -113,8 +113,8 @@ if search_button_clicked:
 
     # Create the GNews object with the prepared parameters
     google_news = GNews(**parameters)
-    if not max_results or int(max_results) > 5:
-        st.warning("Please enter a value less than or equal to 5 for max_results.")
+    if not max_results or int(max_results) > 20:
+        st.warning("Please enter a value less than or equal to 20 for max_results.")
     else:
         
         news_list = ["Uk Lending", "Uk loan interest rates", "uk unsecured loans, Uk economy"]
