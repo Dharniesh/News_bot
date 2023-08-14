@@ -11,7 +11,7 @@ openai.api_key=st.secrets['openai_api']
 
 def ask_GPT(news):
     prompt = f"""
-    Your objective is to summarize the news webpage while retaining \
+    Your objective is to create a summary of a news webpage given by presenting\
     the most crucial information in bullet points.
     
     Summarize the News below, delimited by triple
@@ -31,6 +31,7 @@ def ask_GPT(news):
     #print("Total Tokens:", total_tokens)
     return completion.choices[0].message.content
 
+openai.api_key=openai_apikey
 st.markdown("<div style='text-align: center;'><h1>News Search App</h1></div>", unsafe_allow_html=True)
 
 # Style for the colored and centered note
@@ -72,7 +73,7 @@ with col1:
 # Get user inputs using Streamlit widgets in the second column
 with col2:
     exclude_websites = st.text_input("Enter websites URL to exclude  (Leave blank to skip):")
-    max_results = st.text_input("News Count (default max = 100):")
+    max_results = st.text_input("News Count (default = 1):")
     
     search_button_clicked = st.button("Search")
 
@@ -93,7 +94,7 @@ if search_button_clicked:
         end_date = None
 
     # Convert the max_results input to an integer, use default if empty
-    max_results = int(max_results) if max_results else 100
+    max_results = int(max_results) if max_results else 1
     period = f"{period_days}d" if period_days else None
 
     # Convert the start_date and end_date inputs to tuples of integers (YYYY, M, D)
@@ -113,14 +114,22 @@ if search_button_clicked:
 
     # Create the GNews object with the prepared parameters
     google_news = GNews(**parameters)
-    news_list=["Uk Lending", "Uk loan interest rates", "uk unsecured loans, Uk economy"]
-    results=[]
-    for j in news_list:
-        results_k = google_news.get_news(j)
-        results.extend(results_k)
-    # Create new lists to hold extracted data
-    publisher_titles = []
-    publisher_hrefs = []
+    if not max_results or int(max_results) > 5:
+        st.warning("Please enter a value less than or equal to 5 for max_results.")
+    else:
+        
+        news_list = ["Uk Lending", "Uk loan interest rates", "uk unsecured loans, Uk economy"]
+        results = []
+        for j in news_list:
+            results_k = google_news.get_news(j)
+            results.extend(results_k)
+        # Create new lists to hold extracted data
+        publisher_titles = []
+        publisher_hrefs = []
+        
+            
+
+
 
     # Extract publisher details
     for result in results:
