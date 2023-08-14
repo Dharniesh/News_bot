@@ -1,3 +1,6 @@
 streamlit
 gnews
 pandas
+beautifulsoup4
+openai
+requests
