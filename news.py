@@ -173,12 +173,36 @@ if search_button_clicked:
             temp_var = 0
 
     # Store the summaries and titles in a .txt file
-    with open('summaries.txt', 'w', encoding='utf-8') as file:
-        for i, summary in enumerate(txt_summ):
-            title = df['title'][i]  # Get the title from the DataFrame
-            file.write(f"{title}\n\n")  # Add the title with a space after
-            file.write(f"URL: {df['url'][i]}\n\n")  # Add the URL on the next line
-            file.write(f"{summary}\n\n")  # Add the summary with a space after
+        with open('summaries.txt', 'w', encoding='utf-8') as file:
+            for i, URL in enumerate(df['url']):
+                try:
+                    r = requests.get(URL)
+                    r.raise_for_status()  # Check for request success
+                    soup = BeautifulSoup(r.text, 'html.parser')
+                    results = soup.find_all(['h1', 'p'])
+                    text = [result.get_text() for result in results]
+                    news_article = ' '.join(text)
+                    cgpt_text.append(news_article)
+                    summary_txt = ask_GPT(news_article)
+                    txt_summ.append(summary_txt)
+                    df.loc[i, 'summary_title'] = df.loc[i, 'title']
+
+                    # Write the title, URL, and summary to the file
+                    file.write(f"Title: {df['title'][i]}\n")
+                    file.write(f"URL: {URL}\n")
+                    file.write(f"Summary: {summary_txt}\n\n")
+                    
+                    print(news_article)
+                    print('------------------------------------------------------------')
+
+                    time.sleep(5)
+
+                except requests.exceptions.HTTPError as e:
+                    if e.response.status_code == 403:  # Handle 403 error
+                        file.write(f"Failed URL: {URL}\n\n")
+                    else:
+                        print(f"Error processing URL: {URL}\nError message: {e}")
+
 
     with open('summaries.txt', 'r', encoding='utf-8') as file:
         file_contents = file.read()
