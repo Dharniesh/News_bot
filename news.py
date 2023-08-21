@@ -177,7 +177,7 @@ if search_button_clicked:
             for i, URL in enumerate(df['url']):
                 try:
                     r = requests.get(URL)
-                    r.raise_for_status()  # Check for request success
+                    r.raise_for_status()
                     soup = BeautifulSoup(r.text, 'html.parser')
                     results = soup.find_all(['h1', 'p'])
                     text = [result.get_text() for result in results]
@@ -185,23 +185,26 @@ if search_button_clicked:
                     cgpt_text.append(news_article)
                     summary_txt = ask_GPT(news_article)
                     txt_summ.append(summary_txt)
+        
+                    # Add the title to the DataFrame
                     df.loc[i, 'summary_title'] = df.loc[i, 'title']
-
-                    # Write the title, URL, and summary to the file
+        
+                    # Write the summary to the file
                     file.write(f"Title: {df['title'][i]}\n")
                     file.write(f"URL: {URL}\n")
                     file.write(f"Summary: {summary_txt}\n\n")
                     
                     print(news_article)
                     print('------------------------------------------------------------')
-
+        
                     time.sleep(5)
+        
+                except requests.exceptions.RequestException as e:
+                    error_message = str(e)
+                    file.write(f"Failed URL: {URL}\n")
+                    file.write(f"Error message: {error_message}\n\n")
+                    print(f"Error processing URL: {URL}\nError message: {error_message}")
 
-                except requests.exceptions.HTTPError as e:
-                    if e.response.status_code == 403:  # Handle 403 error
-                        file.write(f"Failed URL: {URL}\n\n")
-                    else:
-                        print(f"Error processing URL: {URL}\nError message: {e}")
 
 
     with open('summaries.txt', 'r', encoding='utf-8') as file:
