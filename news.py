@@ -166,7 +166,7 @@ if search_button_clicked:
             print('------------------------------------------------------------')
             # Add the title to the DataFrame
             df.loc[i, 'summary_title'] = df.loc[i, 'title']
-            time.sleep(5)
+            time.sleep(1)
             temp_var = 1
         except Exception as e:
             print(f"Error processing URL: {URL}\nError message: {e}")
@@ -197,7 +197,7 @@ if search_button_clicked:
                     print(news_article)
                     print('------------------------------------------------------------')
         
-                    time.sleep(5)
+                    time.sleep(1)
         
                 except requests.exceptions.RequestException as e:
                     error_message = str(e)
