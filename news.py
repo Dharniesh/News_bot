@@ -84,7 +84,7 @@ if search_button_clicked:
     if not max_results or int(max_results) > 5:
         st.warning("Please enter a value less than or equal to 5 for max_results.")
     else:
-        news_list = ["Uk Lending", "Uk loan interest rates", "uk unsecured loans, Uk economy"]
+        news_list = ["Uk Lending", "Uk loan interest rates", "uk unsecured loans"]
         results = []
         for j in news_list:
             results_k = google_news.get_news(j)
