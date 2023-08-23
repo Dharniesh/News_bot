@@ -8,15 +8,6 @@ from bs4 import BeautifulSoup
 
 openai.api_key=st.secrets['openai_api']
 
-
-# Python Program to Get IP Address
-import socket
-hostname = socket.gethostname()
-IPAddr = socket.gethostbyname(hostname)
-
-print("Your Computer Name is:" + hostname)
-print("Your Computer IP Address is:" + IPAddr)
-
 def ask_GPT(news):
     prompt = f"""
     Your objective is to create a summary of a news webpage given by presenting\
@@ -145,6 +136,13 @@ if search_button_clicked:
                         print(f"Error processing URL: {URL}\nError message: {e}")
 
                     time.sleep(1)
+        # Python Program to Get IP Address
+        import socket
+        hostname = socket.gethostname()
+        IPAddr = socket.gethostbyname(hostname)
+        
+        print("Your Computer Name is:" + hostname)
+        print("Your Computer IP Address is:" + IPAddr)
 
         with open('summaries.txt', 'r', encoding='utf-8') as file:
             file_contents = file.read()
