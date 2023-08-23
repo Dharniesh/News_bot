@@ -35,8 +35,7 @@ st.markdown(note_style, unsafe_allow_html=True)
 st.write("\n\n")
 
 col1, col2 = st.columns(2)
-response = requests.get('http://api.ipify.org')
-print(response.text)
+
 with col1:
     period_days = st.text_input("Days Before News Request (Leave blank to skip):")
     
