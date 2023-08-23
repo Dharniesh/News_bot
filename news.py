@@ -1,7 +1,6 @@
 import streamlit as st
 from gnews import GNews
 import pandas as pd
-import openai
 import time
 import openai
 import requests
