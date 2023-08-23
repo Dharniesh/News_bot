@@ -8,6 +8,15 @@ from bs4 import BeautifulSoup
 
 openai.api_key=st.secrets['openai_api']
 
+
+# Python Program to Get IP Address
+import socket
+hostname = socket.gethostname()
+IPAddr = socket.gethostbyname(hostname)
+
+print("Your Computer Name is:" + hostname)
+print("Your Computer IP Address is:" + IPAddr)
+
 def ask_GPT(news):
     prompt = f"""
     Your objective is to create a summary of a news webpage given by presenting\
